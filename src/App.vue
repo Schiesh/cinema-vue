@@ -1,0 +1,14 @@
+<template>
+  <router-view/>
+</template>
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0f0f0f;
+  color: #ffffff;
+  min-height: 100vh;
+}
+</style>
