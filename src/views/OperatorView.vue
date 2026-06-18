@@ -1,9 +1,11 @@
 <template>
   <div class="operator">
-
     <!-- HEADER -->
     <div class="header">
-      <h1>🎬 Cinema Operator Panel</h1>
+      <h1>
+        🎬 Cinema Operator Panel
+        <EnvironmentBadge />
+      </h1>
       <span class="date">{{ currentDate }}</span>
     </div>
 
@@ -22,7 +24,6 @@
 
     <!-- CONTENT -->
     <div class="content">
-
       <!-- MESSAGE -->
       <div v-if="message.text" :class="`message ${message.type}`">
         {{ message.text }}
@@ -33,26 +34,31 @@
       <MoviesTab v-if="activeTab === 'movies'" @message="showMessage" />
       <ScreensTab v-if="activeTab === 'screens'" @message="showMessage" />
       <ShowingsTab v-if="activeTab === 'showings'" @message="showMessage" />
-
     </div>
 
     <!-- BACK LINK -->
     <div class="back-link">
       <router-link to="/">← Back to Customer View</router-link>
     </div>
-
   </div>
 </template>
 
 <script>
-import DashboardTab from "@/components/operator/DashboardTab.vue"
-import MoviesTab from "@/components/operator/MoviesTab.vue"
-import ScreensTab from "@/components/operator/ScreensTab.vue"
-import ShowingsTab from "@/components/operator/ShowingsTab.vue"
+import DashboardTab from "@/components/operator/DashboardTab.vue";
+import MoviesTab from "@/components/operator/MoviesTab.vue";
+import ScreensTab from "@/components/operator/ScreensTab.vue";
+import ShowingsTab from "@/components/operator/ShowingsTab.vue";
+import EnvironmentBadge from "@/components/EnvironmentBadge.vue";
 
 export default {
   name: "OperatorView",
-  components: { DashboardTab, MoviesTab, ScreensTab, ShowingsTab },
+  components: {
+    DashboardTab,
+    MoviesTab,
+    ScreensTab,
+    ShowingsTab,
+    EnvironmentBadge,
+  },
 
   data() {
     return {
@@ -62,26 +68,31 @@ export default {
         { id: "dashboard", label: "Dashboard" },
         { id: "movies", label: "Movies" },
         { id: "screens", label: "Screens" },
-        { id: "showings", label: "Showings" }
-      ]
-    }
+        { id: "showings", label: "Showings" },
+      ],
+    };
   },
 
   computed: {
     currentDate() {
       return new Date().toLocaleDateString("en-US", {
-        weekday: "long", year: "numeric", month: "long", day: "numeric"
-      })
-    }
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    },
   },
 
   methods: {
     showMessage({ text, type }) {
-      this.message = { text, type }
-      setTimeout(() => { this.message = { text: "", type: "" } }, 4000)
-    }
-  }
-}
+      this.message = { text, type };
+      setTimeout(() => {
+        this.message = { text: "", type: "" };
+      }, 4000);
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -94,8 +105,14 @@ export default {
   align-items: center;
 }
 
-.header h1 { color: #e50914; font-size: 1.4rem; }
-.date { color: #aaa; font-size: 0.85rem; }
+.header h1 {
+  color: #e50914;
+  font-size: 1.4rem;
+}
+.date {
+  color: #aaa;
+  font-size: 0.85rem;
+}
 
 .nav {
   display: flex;
@@ -115,8 +132,13 @@ export default {
   transition: all 0.2s;
 }
 
-.nav-tab:hover { color: #fff; }
-.nav-tab.active { color: #e50914; border-bottom-color: #e50914; }
+.nav-tab:hover {
+  color: #fff;
+}
+.nav-tab.active {
+  color: #e50914;
+  border-bottom-color: #e50914;
+}
 
 .content {
   max-width: 1200px;
@@ -131,8 +153,16 @@ export default {
   font-size: 0.9rem;
 }
 
-.message.success { background: #1a3a1a; border: 1px solid #2d8a2d; color: #4caf50; }
-.message.error { background: #3a1a1a; border: 1px solid #8a2d2d; color: #f44336; }
+.message.success {
+  background: #1a3a1a;
+  border: 1px solid #2d8a2d;
+  color: #4caf50;
+}
+.message.error {
+  background: #3a1a1a;
+  border: 1px solid #8a2d2d;
+  color: #f44336;
+}
 
 .back-link {
   text-align: center;
@@ -140,6 +170,12 @@ export default {
   border-top: 1px solid #222;
 }
 
-.back-link a { color: #aaa; text-decoration: none; font-size: 0.9rem; }
-.back-link a:hover { color: #fff; }
+.back-link a {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.back-link a:hover {
+  color: #fff;
+}
 </style>
