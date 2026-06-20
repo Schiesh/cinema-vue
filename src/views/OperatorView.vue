@@ -34,6 +34,11 @@
       <MoviesTab v-if="activeTab === 'movies'" @message="showMessage" />
       <ScreensTab v-if="activeTab === 'screens'" @message="showMessage" />
       <ShowingsTab v-if="activeTab === 'showings'" @message="showMessage" />
+      <ThemeTab
+        v-if="activeTab === 'theme'"
+        @message="showMessage"
+        @theme-updated="onThemeUpdated"
+      />
     </div>
 
     <!-- BACK LINK -->
@@ -49,6 +54,7 @@ import MoviesTab from "@/components/operator/MoviesTab.vue";
 import ScreensTab from "@/components/operator/ScreensTab.vue";
 import ShowingsTab from "@/components/operator/ShowingsTab.vue";
 import EnvironmentBadge from "@/components/EnvironmentBadge.vue";
+import ThemeTab from "@/components/operator/ThemeTab.vue";
 
 export default {
   name: "OperatorView",
@@ -57,6 +63,7 @@ export default {
     MoviesTab,
     ScreensTab,
     ShowingsTab,
+    ThemeTab,
     EnvironmentBadge,
   },
 
@@ -69,6 +76,7 @@ export default {
         { id: "movies", label: "Movies" },
         { id: "screens", label: "Screens" },
         { id: "showings", label: "Showings" },
+        { id: "theme", label: "Theme" },
       ],
     };
   },
@@ -90,6 +98,10 @@ export default {
       setTimeout(() => {
         this.message = { text: "", type: "" };
       }, 4000);
+    },
+
+    onThemeUpdated(theme) {
+      this.$root.applyTheme(theme);
     },
   },
 };

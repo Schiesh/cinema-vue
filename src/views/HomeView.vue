@@ -5,7 +5,6 @@
     </div>
 
     <div class="content">
-
       <div v-if="message.text" :class="`message ${message.type}`">
         {{ message.text }}
       </div>
@@ -14,7 +13,9 @@
       <section class="section">
         <h2>Now Showing</h2>
         <div v-if="loading.movies" class="loading">Loading movies...</div>
-        <div v-else-if="movies.length === 0" class="empty">No movies currently showing.</div>
+        <div v-else-if="movies.length === 0" class="empty">
+          No movies currently showing.
+        </div>
         <div v-else class="movies-grid">
           <MovieCard
             v-for="movie in movies"
@@ -30,7 +31,9 @@
       <section v-if="selectedMovie" class="section">
         <h2>Showings for {{ selectedMovie.title }}</h2>
         <div v-if="loading.screenings" class="loading">Loading showings...</div>
-        <div v-else-if="screenings.length === 0" class="empty">No showings available.</div>
+        <div v-else-if="screenings.length === 0" class="empty">
+          No showings available.
+        </div>
         <div v-else class="screenings-list">
           <div
             v-for="screening in screenings"
@@ -41,10 +44,16 @@
           >
             <div>
               <p class="showtime">{{ formatShowtime(screening.showtime) }}</p>
-              <p class="screen-name">{{ screening.screen_name || `Screen ${screening.screen_number}` }}</p>
+              <p class="screen-name">
+                {{
+                  screening.screen_name || `Screen ${screening.screen_number}`
+                }}
+              </p>
             </div>
             <div class="seats-info">
-              <p class="seats-available">{{ screening.seats_available }} seats left</p>
+              <p class="seats-available">
+                {{ screening.seats_available }} seats left
+              </p>
               <p class="seats-total">of {{ screening.seats_total }} total</p>
             </div>
           </div>
@@ -74,11 +83,26 @@
             </div>
           </div>
           <div class="legend">
-            <div class="legend-item"><div class="legend-box available-box"></div> Available</div>
-            <div class="legend-item"><div class="legend-box premium-box"></div> Premium</div>
-            <div class="legend-item"><div class="legend-box selected-box"></div> Selected</div>
-            <div class="legend-item"><div class="legend-box sold-box"></div> Sold</div>
-            <div class="legend-item"><div class="legend-box accessible-box"></div> Accessible</div>
+            <div class="legend-item">
+              <div class="legend-box available-box"></div>
+              Available
+            </div>
+            <div class="legend-item">
+              <div class="legend-box premium-box"></div>
+              Premium
+            </div>
+            <div class="legend-item">
+              <div class="legend-box selected-box"></div>
+              Selected
+            </div>
+            <div class="legend-item">
+              <div class="legend-box sold-box"></div>
+              Sold
+            </div>
+            <div class="legend-item">
+              <div class="legend-box accessible-box"></div>
+              Accessible
+            </div>
           </div>
         </div>
       </section>
@@ -89,36 +113,45 @@
         <div class="form">
           <div class="form-group">
             <label>Full Name</label>
-            <input v-model="booking.name" type="text" placeholder="Jane Smith">
+            <input
+              v-model="booking.name"
+              type="text"
+              placeholder="Jane Smith"
+            />
           </div>
           <div class="form-group">
             <label>Email Address</label>
-            <input v-model="booking.email" type="email" placeholder="jane@example.com">
+            <input
+              v-model="booking.email"
+              type="email"
+              placeholder="jane@example.com"
+            />
           </div>
           <button
             class="book-btn"
             :disabled="loading.booking"
             @click="confirmBooking"
           >
-            {{ loading.booking ? "Booking..." : `Book Seat ${selectedSeat.label}` }}
+            {{
+              loading.booking ? "Booking..." : `Book Seat ${selectedSeat.label}`
+            }}
           </button>
         </div>
       </section>
-
     </div>
   </div>
 </template>
 
 <script>
-import MovieCard from "@/components/MovieCard.vue"
+import MovieCard from "@/components/MovieCard.vue";
 import {
   fetchMovies,
   fetchScreenings,
   fetchScreening,
   fetchSeatMap,
   fetchTickets,
-  bookTicket
-} from "@/api.js"
+  bookTicket,
+} from "@/api.js";
 
 export default {
   name: "HomeView",
@@ -137,79 +170,84 @@ export default {
         movies: false,
         screenings: false,
         seats: false,
-        booking: false
+        booking: false,
       },
-      message: { text: "", type: "" }
-    }
+      message: { text: "", type: "" },
+    };
   },
 
   async mounted() {
-    await this.loadMovies()
+    await this.loadMovies();
   },
 
   methods: {
     async loadMovies() {
-      this.loading.movies = true
+      this.loading.movies = true;
       try {
-        this.movies = await fetchMovies()
+        this.movies = await fetchMovies();
       } catch (error) {
-        this.showMessage(error.message, "error")
+        this.showMessage(error.message, "error");
       } finally {
-        this.loading.movies = false
+        this.loading.movies = false;
       }
     },
 
     async selectMovie(movie) {
-      this.selectedMovie = movie
-      this.selectedScreening = null
-      this.selectedSeat = null
-      this.seatRows = []
-      this.loading.screenings = true
+      this.selectedMovie = movie;
+      this.selectedScreening = null;
+      this.selectedSeat = null;
+      this.seatRows = [];
+      this.loading.screenings = true;
       try {
-        this.screenings = await fetchScreenings(movie.id)
+        this.screenings = await fetchScreenings(movie.id);
       } catch (error) {
-        this.showMessage(error.message, "error")
+        this.showMessage(error.message, "error");
       } finally {
-        this.loading.screenings = false
+        this.loading.screenings = false;
       }
     },
 
     async selectScreening(screening) {
-      this.selectedScreening = screening
-      this.selectedSeat = null
-      this.seatRows = []
-      this.loading.seats = true
+      this.selectedScreening = screening;
+      this.selectedSeat = null;
+      this.seatRows = [];
+      this.loading.seats = true;
       try {
         const [tickets, screeningDetail] = await Promise.all([
           fetchTickets(screening.id),
-          fetchScreening(screening.id)
-        ])
+          fetchScreening(screening.id),
+        ]);
 
-        const ticketBySeat = {}
-        tickets.forEach(t => { ticketBySeat[t.seat_number] = t })
+        const ticketBySeat = {};
+        tickets.forEach((t) => {
+          ticketBySeat[t.seat_number] = t;
+        });
 
         if (screeningDetail.screen_id) {
-          await this.buildSeatMapRows(screeningDetail.screen_id, ticketBySeat)
+          await this.buildSeatMapRows(screeningDetail.screen_id, ticketBySeat);
         } else {
-          this.buildFlatRows(tickets)
+          this.buildFlatRows(tickets);
         }
       } catch (error) {
-        this.showMessage(error.message, "error")
+        this.showMessage(error.message, "error");
       } finally {
-        this.loading.seats = false
+        this.loading.seats = false;
       }
     },
 
     async buildSeatMapRows(screenId, ticketBySeat) {
-      const seatMap = await fetchSeatMap(screenId)
-      this.seatRows = seatMap.seat_map_rows.map(row => {
-        const seats = []
-        row.seats.forEach(seat => {
+      const seatMap = await fetchSeatMap(screenId);
+      this.seatRows = seatMap.seat_map_rows.map((row) => {
+        const seats = [];
+        row.seats.forEach((seat) => {
           if (row.has_aisle && row.aisle_after_seat === seat.position - 1) {
-            seats.push({ isAisle: true, id: `aisle-${row.row_letter}-${seat.position}` })
+            seats.push({
+              isAisle: true,
+              id: `aisle-${row.row_letter}-${seat.position}`,
+            });
           }
-          const ticket = ticketBySeat[seat.label]
-          const status = ticket ? ticket.status : "unavailable"
+          const ticket = ticketBySeat[seat.label];
+          const status = ticket ? ticket.status : "unavailable";
           seats.push({
             id: seat.id,
             ticketId: ticket?.id,
@@ -219,20 +257,23 @@ export default {
             active: seat.active,
             isAisle: false,
             clickable: status === "available" && seat.active,
-            icon: seat.seat_type === "wheelchair" ? "♿"
-              : seat.seat_type === "companion" ? "♿+"
-              : seat.label
-          })
-        })
-        return { letter: row.row_letter, seats }
-      })
+            icon:
+              seat.seat_type === "wheelchair"
+                ? "♿"
+                : seat.seat_type === "companion"
+                ? "♿+"
+                : seat.label,
+          });
+        });
+        return { letter: row.row_letter, seats };
+      });
     },
 
     buildFlatRows(tickets) {
-      const rowMap = {}
-      tickets.forEach(ticket => {
-        const letter = ticket.seat_number[0]
-        if (!rowMap[letter]) rowMap[letter] = []
+      const rowMap = {};
+      tickets.forEach((ticket) => {
+        const letter = ticket.seat_number[0];
+        if (!rowMap[letter]) rowMap[letter] = [];
         rowMap[letter].push({
           id: ticket.id,
           ticketId: ticket.id,
@@ -242,76 +283,86 @@ export default {
           active: true,
           isAisle: false,
           clickable: ticket.status === "available",
-          icon: ticket.seat_number
-        })
-      })
-      this.seatRows = Object.keys(rowMap).sort().map(letter => ({
-        letter,
-        seats: rowMap[letter]
-      }))
+          icon: ticket.seat_number,
+        });
+      });
+      this.seatRows = Object.keys(rowMap)
+        .sort()
+        .map((letter) => ({
+          letter,
+          seats: rowMap[letter],
+        }));
     },
 
     getSeatClass(seat) {
-      if (!seat.active) return "seat inactive"
-      if (seat === this.selectedSeat) return "seat selected"
-      if (seat.status === "sold") return "seat sold"
-      if (seat.status === "available") return `seat available ${seat.seatType}`
-      return "seat unavailable"
+      if (!seat.active) return "seat inactive";
+      if (seat === this.selectedSeat) return "seat selected";
+      if (seat.status === "sold") return "seat sold";
+      if (seat.status === "available") return `seat available ${seat.seatType}`;
+      return "seat unavailable";
     },
 
     selectSeat(seat) {
-      this.selectedSeat = seat
+      this.selectedSeat = seat;
     },
 
     async confirmBooking() {
       if (!this.booking.name.trim() || !this.booking.email.trim()) {
-        this.showMessage("Please enter your name and email.", "error")
-        return
+        this.showMessage("Please enter your name and email.", "error");
+        return;
       }
-      this.loading.booking = true
+      this.loading.booking = true;
       try {
         const result = await bookTicket(
           this.selectedSeat.ticketId,
           this.booking.name,
-          this.booking.email
-        )
+          this.booking.email,
+        );
         this.showMessage(
           `✅ Booking confirmed! Seat ${result.ticket.seat_number} booked for ${result.ticket.customer_name}.`,
-          "success"
-        )
-        await this.selectScreening(this.selectedScreening)
-        this.selectedSeat = null
-        this.booking = { name: "", email: "" }
+          "success",
+        );
+        await this.selectScreening(this.selectedScreening);
+        this.selectedSeat = null;
+        this.booking = { name: "", email: "" };
       } catch (error) {
-        this.showMessage(error.message, "error")
+        this.showMessage(error.message, "error");
       } finally {
-        this.loading.booking = false
+        this.loading.booking = false;
       }
     },
 
     showMessage(text, type) {
-      this.message = { text, type }
-      setTimeout(() => { this.message = { text: "", type: "" } }, 5000)
+      this.message = { text, type };
+      setTimeout(() => {
+        this.message = { text: "", type: "" };
+      }, 5000);
     },
 
     formatShowtime(datetime) {
       return new Date(datetime).toLocaleString("en-US", {
-        weekday: "short", month: "short", day: "numeric",
-        hour: "numeric", minute: "2-digit", hour12: true
-      })
-    }
-  }
-}
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>
 .header {
-  background: #1a1a1a;
-  border-bottom: 2px solid #e50914;
+  border-bottom: 2px solid var(--color-primary);
   padding: 1rem 2rem;
 }
 
-.header h1 { color: #e50914; font-size: 1.5rem; }
+.header h1 {
+  color: var(--color-primary);
+  font-size: 1.5rem;
+}
 
 .content {
   max-width: 1100px;
@@ -319,11 +370,24 @@ export default {
   padding: 2rem;
 }
 
-.section { margin-bottom: 2.5rem; }
-.section h2 { color: #e50914; margin-bottom: 1.25rem; font-size: 1.2rem; }
+.section {
+  margin-bottom: 2.5rem;
+}
+.section h2 {
+  color: var(--color-primary);
+  margin-bottom: 1.25rem;
+  font-size: 1.2rem;
+}
 
-.loading { color: #aaa; padding: 1rem 0; }
-.empty { color: #555; font-style: italic; padding: 1rem 0; }
+.loading {
+  color: #aaa;
+  padding: 1rem 0;
+}
+.empty {
+  color: #555;
+  font-style: italic;
+  padding: 1rem 0;
+}
 
 .message {
   padding: 0.75rem 1rem;
@@ -332,8 +396,16 @@ export default {
   font-size: 0.9rem;
 }
 
-.message.success { background: #1a3a1a; border: 1px solid #2d8a2d; color: #4caf50; }
-.message.error { background: #3a1a1a; border: 1px solid #8a2d2d; color: #f44336; }
+.message.success {
+  background: #1a3a1a;
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+.message.error {
+  background: #3a1a1a;
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
 
 .movies-grid {
   display: grid;
@@ -341,7 +413,11 @@ export default {
   gap: 1.25rem;
 }
 
-.screenings-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.screenings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
 
 .screening-item {
   background: #1a1a1a;
@@ -355,12 +431,30 @@ export default {
   transition: border-color 0.2s;
 }
 
-.screening-item:hover { border-color: #e50914; }
-.screening-item.selected { border-color: #e50914; }
-.showtime { font-weight: bold; margin-bottom: 0.25rem; }
-.screen-name { font-size: 0.85rem; color: #aaa; }
-.seats-available { color: #4caf50; font-weight: bold; text-align: right; }
-.seats-total { font-size: 0.8rem; color: #aaa; text-align: right; }
+.screening-item:hover {
+  border-color: var(--color-primary);
+}
+.screening-item.selected {
+  border-color: var(--color-primary);
+}
+.showtime {
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+.screen-name {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+.seats-available {
+  color: var(--color-success);
+  font-weight: bold;
+  text-align: right;
+}
+.seats-total {
+  font-size: 0.8rem;
+  color: #aaa;
+  text-align: right;
+}
 
 .screen-indicator {
   text-align: center;
@@ -373,8 +467,17 @@ export default {
   letter-spacing: 3px;
 }
 
-.seat-map { display: flex; flex-direction: column; gap: 5px; overflow-x: auto; }
-.seat-row { display: flex; align-items: center; gap: 4px; }
+.seat-map {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow-x: auto;
+}
+.seat-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
 
 .row-label {
   width: 20px;
@@ -385,7 +488,10 @@ export default {
   flex-shrink: 0;
 }
 
-.aisle-gap { width: 20px; flex-shrink: 0; }
+.aisle-gap {
+  width: 20px;
+  flex-shrink: 0;
+}
 
 .seat {
   width: 36px;
@@ -401,28 +507,103 @@ export default {
   transition: all 0.15s;
 }
 
-.seat.available { background: #2a2a2a; border-color: #555; color: #fff; cursor: pointer; }
-.seat.available:hover { border-color: #e50914; }
-.seat.available.premium { background: #3a2a1a; border-color: #ffb74d; color: #ffb74d; }
+.seat.available {
+  background: #2a2a2a;
+  border-color: #555;
+  color: #fff;
+  cursor: pointer;
+}
+.seat.available:hover {
+  border-color: var(--color-primary);
+}
+.seat.available.premium {
+  background: #3a2a1a;
+  border-color: #ffb74d;
+  color: #ffb74d;
+}
 .seat.available.wheelchair,
-.seat.available.companion { background: #1a2a3a; border-color: #4a9eff; color: #4a9eff; }
-.seat.selected { background: #e50914 !important; border-color: #e50914 !important; color: #fff !important; cursor: pointer; }
-.seat.sold { background: #1a1a1a; border-color: #333; color: #444; cursor: not-allowed; }
-.seat.inactive { background: #111; border-color: #1a1a1a; color: #222; cursor: not-allowed; }
-.seat.unavailable { background: #111; border-color: #1a1a1a; color: #222; cursor: not-allowed; }
+.seat.available.companion {
+  background: #1a2a3a;
+  border-color: var(--color-info);
+  color: var(--color-info);
+}
+.seat.selected {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #fff !important;
+  cursor: pointer;
+}
+.seat.sold {
+  background: #1a1a1a;
+  border-color: #333;
+  color: #444;
+  cursor: not-allowed;
+}
+.seat.inactive {
+  background: #111;
+  border-color: #1a1a1a;
+  color: #222;
+  cursor: not-allowed;
+}
+.seat.unavailable {
+  background: #111;
+  border-color: #1a1a1a;
+  color: #222;
+  cursor: not-allowed;
+}
 
-.legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; font-size: 0.8rem; color: #aaa; }
-.legend-item { display: flex; align-items: center; gap: 6px; }
-.legend-box { width: 16px; height: 16px; border-radius: 3px; border: 2px solid #555; }
-.available-box { background: #2a2a2a; }
-.premium-box { background: #3a2a1a; border-color: #ffb74d; }
-.selected-box { background: #e50914; border-color: #e50914; }
-.sold-box { background: #1a1a1a; border-color: #333; }
-.accessible-box { background: #1a2a3a; border-color: #4a9eff; }
+.legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  font-size: 0.8rem;
+  color: #aaa;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-box {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 2px solid #555;
+}
+.available-box {
+  background: #2a2a2a;
+}
+.premium-box {
+  background: #3a2a1a;
+  border-color: #ffb74d;
+}
+.selected-box {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.sold-box {
+  background: #1a1a1a;
+  border-color: #333;
+}
+.accessible-box {
+  background: #1a2a3a;
+  border-color: var(--color-info);
+}
 
-.form { max-width: 480px; }
-.form-group { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
-.form-group label { font-size: 0.85rem; color: #aaa; }
+.form {
+  max-width: 480px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.form-group label {
+  font-size: 0.85rem;
+  color: #aaa;
+}
 
 .form-group input {
   padding: 0.75rem;
@@ -433,12 +614,15 @@ export default {
   font-size: 0.95rem;
 }
 
-.form-group input:focus { outline: none; border-color: #e50914; }
+.form-group input:focus {
+  outline: none;
+  border-color: #e50914;
+}
 
 .book-btn {
   width: 100%;
   padding: 0.9rem;
-  background: #e50914;
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 6px;
@@ -448,6 +632,11 @@ export default {
   transition: background 0.2s;
 }
 
-.book-btn:hover { background: #b20710; }
-.book-btn:disabled { background: #555; cursor: not-allowed; }
+.book-btn:hover {
+  filter: brightness(0.85);
+}
+.book-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
 </style>

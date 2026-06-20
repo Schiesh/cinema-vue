@@ -141,3 +141,19 @@ export async function bookTicket(ticketId, customerName, customerEmail) {
   }
   return res.json();
 }
+// ── Theme ──────────────────────────────────────────────────────
+export async function fetchTheme() {
+  const res = await fetch(`${API}/theme`);
+  if (!res.ok) throw new Error("Failed to fetch theme");
+  return res.json();
+}
+
+export async function updateTheme(data) {
+  const res = await fetch(`${API}/theme`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ theme: data }),
+  });
+  if (!res.ok) throw new Error("Failed to update theme");
+  return res.json();
+}
