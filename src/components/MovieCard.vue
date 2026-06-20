@@ -34,7 +34,7 @@ export default {
 
 <style scoped>
 .movie-card {
-  background: #1a1a1a;
+  background: var(--color-secondary);
   border-radius: 8px;
   padding: 1.5rem;
   cursor: pointer;
@@ -43,11 +43,12 @@ export default {
 }
 
 .movie-card:hover {
-  border-color: #e50914;
+  border-color: var(--color-primary);
 }
 .movie-card.selected {
-  border-color: #e50914;
+  border-color: var(--color-primary);
 }
+
 .movie-title {
   font-size: 1.1rem;
   font-weight: bold;
@@ -59,10 +60,11 @@ export default {
   margin-bottom: 0.2rem;
 }
 .movie-price {
-  color: #e50914;
+  color: var(--color-primary);
   font-weight: bold;
   margin-top: 0.75rem;
 }
+
 .poster-wrap {
   width: 100%;
   aspect-ratio: 2 / 3;
