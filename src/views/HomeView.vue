@@ -13,15 +13,29 @@
       <section class="section">
         <h2>Now Showing</h2>
         <div v-if="loading.movies" class="loading">Loading movies...</div>
-        <div v-else-if="movies.length === 0" class="empty">
+        <div v-else-if="nowShowingMovies.length === 0" class="empty">
           No movies currently showing.
         </div>
         <div v-else class="movies-grid">
           <MovieCard
-            v-for="movie in movies"
+            v-for="movie in nowShowingMovies"
             :key="movie.id"
             :movie="movie"
             :isSelected="selectedMovie?.id === movie.id"
+            @selected="selectMovie"
+          />
+        </div>
+      </section>
+
+      <section v-if="comingSoonMovies.length > 0" class="section">
+        <h2>Coming Soon</h2>
+        <div class="movies-grid">
+          <MovieCard
+            v-for="movie in comingSoonMovies"
+            :key="movie.id"
+            :movie="movie"
+            :isSelected="selectedMovie?.id === movie.id"
+            :isComingSoon="true"
             @selected="selectMovie"
           />
         </div>
@@ -145,7 +159,8 @@
 <script>
 import MovieCard from "@/components/MovieCard.vue";
 import {
-  fetchMovies,
+  fetchNowShowing,
+  fetchComingSoon,
   fetchScreenings,
   fetchScreening,
   fetchSeatMap,
@@ -159,7 +174,8 @@ export default {
 
   data() {
     return {
-      movies: [],
+      nowShowingMovies: [],
+      comingSoonMovies: [],
       screenings: [],
       seatRows: [],
       selectedMovie: null,
@@ -184,7 +200,12 @@ export default {
     async loadMovies() {
       this.loading.movies = true;
       try {
-        this.movies = await fetchMovies();
+        const [nowShowing, comingSoon] = await Promise.all([
+          fetchNowShowing(),
+          fetchComingSoon(),
+        ]);
+        this.nowShowingMovies = nowShowing;
+        this.comingSoonMovies = comingSoon;
       } catch (error) {
         this.showMessage(error.message, "error");
       } finally {

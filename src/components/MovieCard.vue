@@ -1,7 +1,7 @@
 <template>
   <div
     class="movie-card"
-    :class="{ selected: isSelected }"
+    :class="{ selected: isSelected, 'coming-soon': isComingSoon }"
     @click="$emit('selected', movie)"
   >
     <div class="poster-wrap">
@@ -12,6 +12,7 @@
         :alt="movie.title"
       />
       <div v-else class="poster-fallback">🎬</div>
+      <div v-if="isComingSoon" class="coming-soon-badge">Coming Soon</div>
     </div>
     <h3 class="movie-title">{{ movie.title }}</h3>
     <p class="movie-meta">⏱ {{ movie.duration }} mins</p>
@@ -27,6 +28,7 @@ export default {
   props: {
     movie: { type: Object, required: true },
     isSelected: { type: Boolean, default: false },
+    isComingSoon: { type: Boolean, default: false },
   },
   emits: ["selected"],
 };
@@ -66,6 +68,7 @@ export default {
 }
 
 .poster-wrap {
+  position: relative;
   width: 100%;
   aspect-ratio: 2 / 3;
   border-radius: 6px;
@@ -88,5 +91,26 @@ export default {
   justify-content: center;
   font-size: 2.5rem;
   color: #333;
+}
+
+.movie-card.coming-soon {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.movie-card.coming-soon:hover {
+  border-color: transparent;
+}
+
+.coming-soon-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--color-info);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: bold;
 }
 </style>
