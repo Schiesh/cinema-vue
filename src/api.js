@@ -32,6 +32,18 @@ export async function deleteMovie(id) {
   if (!res.ok) throw new Error("Failed to delete movie");
 }
 
+export async function fetchNowShowing() {
+  const res = await fetch(`${API}/movies/now_showing`);
+  if (!res.ok) throw new Error("Failed to fetch now showing movies");
+  return res.json();
+}
+
+export async function fetchComingSoon() {
+  const res = await fetch(`${API}/movies/coming_soon`);
+  if (!res.ok) throw new Error("Failed to fetch coming soon movies");
+  return res.json();
+}
+
 // ── SCREENS ─────────────────────────────────────────────────────
 export async function fetchScreens() {
   const res = await fetch(`${API}/screens`);

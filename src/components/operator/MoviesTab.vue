@@ -93,15 +93,6 @@
               placeholder="14.99"
             />
           </div>
-          <div class="form-group">
-            <label>Base Price ($)</label>
-            <input
-              v-model="form.price"
-              type="number"
-              step="0.01"
-              placeholder="14.99"
-            />
-          </div>
           <div class="form-group full-width">
             <label>Poster URL</label>
             <input
@@ -109,6 +100,12 @@
               type="text"
               placeholder="https://example.com/poster.jpg"
             />
+            <div class="form-group full-width checkbox-group">
+              <label class="checkbox-label">
+                <input v-model="form.coming_soon_toggle" type="checkbox" />
+                Show in "Coming Soon" even without scheduled showings
+              </label>
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -139,6 +136,7 @@ export default {
         rating: "PG-13",
         price: "",
         poster_url: "",
+        coming_soon_toggle: true,
       },
     };
   },
@@ -168,6 +166,7 @@ export default {
         rating: movie?.rating || "PG-13",
         price: movie?.price || "",
         poster_url: movie?.poster_url || "",
+        coming_soon_toggle: movie?.coming_soon_toggle || false,
       };
       this.modal.open = true;
     },
@@ -404,5 +403,27 @@ export default {
   font-size: 0.55rem;
   color: #555;
   text-align: center;
+}
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding: 0.75rem 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #ccc;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
 }
 </style>
