@@ -42,37 +42,34 @@
       </section>
 
       <!-- SCREENINGS -->
-      <section v-if="selectedMovie" class="section">
-        <h2>Showings for {{ selectedMovie.title }}</h2>
-        <div v-if="loading.screenings" class="loading">Loading showings...</div>
-        <div v-else-if="screenings.length === 0" class="empty">
-          No showings available.
+      <div
+        v-for="screening in screenings"
+        :key="screening.id"
+        class="screening-item"
+        :class="{
+          selected: selectedScreening?.id === screening.id,
+          closed: !screening.bookable,
+        }"
+        @click="screening.bookable && selectScreening(screening)"
+      >
+        <div>
+          <p class="showtime">{{ formatShowtime(screening.showtime) }}</p>
+          <p class="screen-name">
+            {{ screening.screen_name || `Screen ${screening.screen_number}` }}
+          </p>
         </div>
-        <div v-else class="screenings-list">
-          <div
-            v-for="screening in screenings"
-            :key="screening.id"
-            class="screening-item"
-            :class="{ selected: selectedScreening?.id === screening.id }"
-            @click="selectScreening(screening)"
+        <div class="seats-info">
+          <template v-if="screening.bookable">
+            <p class="seats-available">
+              {{ screening.seats_available }} seats left
+            </p>
+            <p class="seats-total">of {{ screening.seats_total }} total</p>
+          </template>
+          <span v-else class="closed-badge"
+            >Booking closed — purchase at counter</span
           >
-            <div>
-              <p class="showtime">{{ formatShowtime(screening.showtime) }}</p>
-              <p class="screen-name">
-                {{
-                  screening.screen_name || `Screen ${screening.screen_number}`
-                }}
-              </p>
-            </div>
-            <div class="seats-info">
-              <p class="seats-available">
-                {{ screening.seats_available }} seats left
-              </p>
-              <p class="seats-total">of {{ screening.seats_total }} total</p>
-            </div>
-          </div>
         </div>
-      </section>
+      </div>
 
       <!-- SEATS -->
       <section v-if="selectedScreening" class="section">
@@ -659,5 +656,26 @@ export default {
 .book-btn:disabled {
   background: #555;
   cursor: not-allowed;
+}
+
+.screening-item.closed {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.screening-item.closed:hover {
+  border-color: transparent;
+}
+
+.closed-badge {
+  display: inline-block;
+  background: rgba(244, 67, 54, 0.15);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
 }
 </style>
