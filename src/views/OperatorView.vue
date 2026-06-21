@@ -39,6 +39,7 @@
         @message="showMessage"
         @theme-updated="onThemeUpdated"
       />
+      <SiteSettingsTab v-if="activeTab === 'settings'" @message="showMessage" />
     </div>
 
     <!-- BACK LINK -->
@@ -55,6 +56,7 @@ import ScreensTab from "@/components/operator/ScreensTab.vue";
 import ShowingsTab from "@/components/operator/ShowingsTab.vue";
 import EnvironmentBadge from "@/components/EnvironmentBadge.vue";
 import ThemeTab from "@/components/operator/ThemeTab.vue";
+import SiteSettingsTab from "@/components/operator/SiteSettingsTab.vue";
 
 export default {
   name: "OperatorView",
@@ -64,6 +66,7 @@ export default {
     ScreensTab,
     ShowingsTab,
     ThemeTab,
+    SiteSettingsTab,
     EnvironmentBadge,
   },
 
@@ -77,6 +80,7 @@ export default {
         { id: "screens", label: "Screens" },
         { id: "showings", label: "Showings" },
         { id: "theme", label: "Theme" },
+        { id: "settings", label: "Site Settings" },
       ],
     };
   },

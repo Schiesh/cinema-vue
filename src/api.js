@@ -169,3 +169,20 @@ export async function updateTheme(data) {
   if (!res.ok) throw new Error("Failed to update theme");
   return res.json();
 }
+
+// ── Site Settings ──────────────────────────────────────────────────────
+export async function fetchSiteSettings() {
+  const res = await fetch(`${API}/site_settings`);
+  if (!res.ok) throw new Error("Failed to fetch site settings");
+  return res.json();
+}
+
+export async function updateSiteSettings(data) {
+  const res = await fetch(`${API}/site_settings`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ site_setting: data }),
+  });
+  if (!res.ok) throw new Error("Failed to update site settings");
+  return res.json();
+}
