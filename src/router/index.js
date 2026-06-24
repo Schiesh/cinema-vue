@@ -1,15 +1,32 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import OperatorView from '../views/OperatorView.vue'
-
-const routes = [
-  { path: '/', component: HomeView },
-  { path: '/operator', component: OperatorView }
-]
+import { createRouter, createWebHashHistory } from "vue-router";
+import HomeView from "../views/HomeView.vue";
+import OperatorView from "../views/OperatorView.vue";
+import LoginView from "../views/LoginView.vue";
 
 const router = createRouter({
-  history: createWebHistory(),
-  routes
-})
+  history: createWebHashHistory(),
+  routes: [
+    { path: "/", component: HomeView },
+    { path: "/login", component: LoginView },
+    {
+      path: "/operator",
+      component: OperatorView,
+      meta: { requiresAuth: true },
+    },
+  ],
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth) {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      next("/login");
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
+export default router;

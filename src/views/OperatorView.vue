@@ -6,7 +6,11 @@
         🎬 Cinema Operator Panel
         <EnvironmentBadge />
       </h1>
-      <span class="date">{{ currentDate }}</span>
+      <div class="header-right">
+        <span class="date">{{ currentDate }}</span>
+        <span class="username">{{ username }}</span>
+        <button class="btn-logout" @click="logout">Sign Out</button>
+      </div>
     </div>
 
     <!-- NAV -->
@@ -94,9 +98,20 @@ export default {
         day: "numeric",
       });
     },
+
+    username() {
+      return localStorage.getItem("auth_username") || "Operator";
+    },
   },
 
   methods: {
+    logout() {
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("auth_role");
+      localStorage.removeItem("auth_username");
+      this.$router.push("/login");
+    },
+
     showMessage({ text, type }) {
       this.message = { text, type };
       setTimeout(() => {
@@ -113,12 +128,12 @@ export default {
 
 <style scoped>
 .header {
-  background: #1a1a1a;
-  border-bottom: 2px solid #e50914;
-  padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1rem 2rem;
+  background: var(--color-secondary);
+  border-bottom: 2px solid var(--color-primary);
 }
 
 .header h1 {
@@ -193,5 +208,31 @@ export default {
 }
 .back-link a:hover {
   color: #fff;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.username {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.btn-logout {
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #aaa;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.btn-logout:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 </style>
