@@ -1,4 +1,12 @@
-const API = process.env.VUE_APP_API_URL;
+const API = process.env.VUE_APP_API_URL || "http://localhost:3001";
+
+function authHeaders() {
+  const token = localStorage.getItem("auth_token");
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
 
 // ── MOVIES ──────────────────────────────────────────────────────
 export async function fetchMovies() {
@@ -10,7 +18,7 @@ export async function fetchMovies() {
 export async function createMovie(data) {
   const res = await fetch(`${API}/movies`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({ movie: data }),
   });
   if (!res.ok) throw new Error("Failed to create movie");
@@ -20,7 +28,7 @@ export async function createMovie(data) {
 export async function updateMovie(id, data) {
   const res = await fetch(`${API}/movies/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({ movie: data }),
   });
   if (!res.ok) throw new Error("Failed to update movie");
@@ -54,7 +62,7 @@ export async function fetchScreens() {
 export async function createScreen(data) {
   const res = await fetch(`${API}/screens`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({ screen: data }),
   });
   if (!res.ok) throw new Error("Failed to create screen");
@@ -64,7 +72,7 @@ export async function createScreen(data) {
 export async function updateScreen(id, data) {
   const res = await fetch(`${API}/screens/${id}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({ screen: data }),
   });
   if (!res.ok) throw new Error("Failed to update screen");
@@ -86,7 +94,7 @@ export async function fetchSeatMap(screenId) {
 export async function createSeatMap(screenId, data) {
   const res = await fetch(`${API}/screens/${screenId}/seat_map`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({ seat_map: data }),
   });
   if (!res.ok) throw new Error("Failed to create seat map");
@@ -96,7 +104,7 @@ export async function createSeatMap(screenId, data) {
 export async function updateSeat(seatId, data) {
   const res = await fetch(`${API}/seats/${seatId}`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({ seat: data }),
   });
   if (!res.ok) throw new Error("Failed to update seat");
@@ -119,7 +127,7 @@ export async function fetchScreening(screeningId) {
 export async function createScreening(movieId, data) {
   const res = await fetch(`${API}/movies/${movieId}/screenings`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({ screening: data }),
   });
   if (!res.ok) throw new Error("Failed to create screening");
@@ -141,7 +149,7 @@ export async function fetchTickets(screeningId) {
 export async function bookTicket(ticketId, customerName, customerEmail) {
   const res = await fetch(`${API}/tickets/${ticketId}/book`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({
       customer_name: customerName,
       customer_email: customerEmail,
@@ -163,7 +171,7 @@ export async function fetchTheme() {
 export async function updateTheme(data) {
   const res = await fetch(`${API}/theme`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({ theme: data }),
   });
   if (!res.ok) throw new Error("Failed to update theme");
@@ -180,9 +188,20 @@ export async function fetchSiteSettings() {
 export async function updateSiteSettings(data) {
   const res = await fetch(`${API}/site_settings`, {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify({ site_setting: data }),
   });
   if (!res.ok) throw new Error("Failed to update site settings");
+  return res.json();
+}
+
+// ── Operator Login ──────────────────────────────────────────────────────
+export async function loginOperator(username, password) {
+  const res = await fetch(`${API}/auth/login`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ username, password }),
+  });
+  if (!res.ok) throw new Error("Invalid username or password");
   return res.json();
 }
