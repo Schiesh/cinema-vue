@@ -9,13 +9,13 @@
 
       <div class="login-form">
         <div class="form-group">
-          <label>Username</label>
+          <label>Email</label>
           <input
-            v-model="form.username"
-            type="text"
-            placeholder="Enter username"
+            v-model="form.email"
+            type="email"
+            placeholder="Enter email"
             @keyup.enter="login"
-            autocomplete="username"
+            autocomplete="email"
           />
         </div>
         <div class="form-group">
@@ -51,7 +51,7 @@ export default {
 
   data() {
     return {
-      form: { username: "", password: "" },
+      form: { email: "", password: "" },
       loading: false,
       error: null,
     };
@@ -59,17 +59,14 @@ export default {
 
   methods: {
     async login() {
-      if (!this.form.username || !this.form.password) return;
+      if (!this.form.email || !this.form.password) return;
       this.loading = true;
       this.error = null;
       try {
-        const data = await loginOperator(
-          this.form.username,
-          this.form.password,
-        );
+        const data = await loginOperator(this.form.email, this.form.password);
         localStorage.setItem("auth_token", data.token);
         localStorage.setItem("auth_role", data.role);
-        localStorage.setItem("auth_username", data.username);
+        localStorage.setItem("auth_username", data.full_name);
         this.$router.push("/operator");
       } catch (e) {
         this.error = e.message;
