@@ -196,12 +196,51 @@ export async function updateSiteSettings(data) {
 }
 
 // ── Operator Login ──────────────────────────────────────────────────────
-export async function loginOperator(username, password) {
+export async function loginOperator(email, password) {
   const res = await fetch(`${API}/auth/login`, {
     method: "POST",
-    headers: authHeaders(),
-    body: JSON.stringify({ username, password }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
   });
-  if (!res.ok) throw new Error("Invalid username or password");
+  if (!res.ok) throw new Error("Invalid email or password");
   return res.json();
+}
+
+export async function fetchUsers(filter = null, includeInactive = false) {
+  const params = new URLSearchParams();
+  if (filter) params.append("filter", filter);
+  if (includeInactive) params.append("include_inactive", "true");
+  const res = await fetch(`${API}/users?${params}`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to fetch users");
+  return res.json();
+}
+
+export async function createUser(data) {
+  const res = await fetch(`${API}/users`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify({ user: data }),
+  });
+  if (!res.ok) throw new Error("Failed to create user");
+  return res.json();
+}
+
+export async function updateUser(id, data) {
+  const res = await fetch(`${API}/users/${id}`, {
+    method: "PATCH",
+    headers: authHeaders(),
+    body: JSON.stringify({ user: data }),
+  });
+  if (!res.ok) throw new Error("Failed to update user");
+  return res.json();
+}
+
+export async function deactivateUser(id) {
+  const res = await fetch(`${API}/users/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to deactivate user");
 }
