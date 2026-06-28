@@ -2,7 +2,22 @@
   <div class="home">
     <div class="header">
       <h1>🎬 Cinema Booking</h1>
+      <div class="header-auth">
+        <template v-if="currentUser">
+          <span class="welcome">Welcome, {{ currentUser.full_name }}</span>
+          <button class="btn-signout" @click="signOut">Sign Out</button>
+        </template>
+        <button v-else class="btn-signin" @click="showAuthModal = true">
+          Sign In / Register
+        </button>
+      </div>
     </div>
+
+    <AuthModal
+      v-if="showAuthModal"
+      @close="showAuthModal = false"
+      @authenticated="onAuthenticated"
+    />
 
     <div class="content">
       <div v-if="message.text" :class="`message ${message.type}`">
@@ -122,22 +137,40 @@
       <section v-if="selectedSeat" class="section">
         <h2>Your Details</h2>
         <div class="form">
-          <div class="form-group">
-            <label>Full Name</label>
-            <input
-              v-model="booking.name"
-              type="text"
-              placeholder="Jane Smith"
-            />
-          </div>
-          <div class="form-group">
-            <label>Email Address</label>
-            <input
-              v-model="booking.email"
-              type="email"
-              placeholder="jane@example.com"
-            />
-          </div>
+          <!-- Logged in — show read-only info -->
+          <template v-if="currentUser">
+            <div class="booking-user-info">
+              <div class="user-info-row">
+                <span class="user-info-label">Booking as</span>
+                <span class="user-info-value">{{ currentUser.full_name }}</span>
+              </div>
+              <div class="user-info-row">
+                <span class="user-info-label">Email</span>
+                <span class="user-info-value">{{ currentUser.email }}</span>
+              </div>
+            </div>
+          </template>
+
+          <!-- Guest — show editable fields -->
+          <template v-else>
+            <div class="form-group">
+              <label>Full Name</label>
+              <input
+                v-model="booking.name"
+                type="text"
+                placeholder="Jane Smith"
+              />
+            </div>
+            <div class="form-group">
+              <label>Email Address</label>
+              <input
+                v-model="booking.email"
+                type="email"
+                placeholder="jane@example.com"
+              />
+            </div>
+          </template>
+
           <button
             class="book-btn"
             :disabled="loading.booking"
@@ -155,6 +188,7 @@
 
 <script>
 import MovieCard from "@/components/MovieCard.vue";
+import AuthModal from "@/components/AuthModal.vue";
 import {
   fetchNowShowing,
   fetchComingSoon,
@@ -167,7 +201,7 @@ import {
 
 export default {
   name: "HomeView",
-  components: { MovieCard },
+  components: { MovieCard, AuthModal },
 
   data() {
     return {
@@ -186,11 +220,34 @@ export default {
         booking: false,
       },
       message: { text: "", type: "" },
+      showAuthModal: false,
+      currentUser: null,
     };
+  },
+
+  watch: {
+    currentUser(user) {
+      if (user) {
+        this.booking.name = user.full_name;
+        this.booking.email = user.email;
+      } else {
+        this.booking.name = "";
+        this.booking.email = "";
+      }
+    },
   },
 
   async mounted() {
     await this.loadMovies();
+    const token = localStorage.getItem("customer_token");
+    if (token) {
+      this.currentUser = {
+        full_name: localStorage.getItem("customer_name"),
+        email: localStorage.getItem("customer_email"),
+      };
+      this.booking.name = this.currentUser.full_name;
+      this.booking.email = this.currentUser.email;
+    }
   },
 
   methods: {
@@ -367,14 +424,32 @@ export default {
         hour12: true,
       });
     },
+
+    onAuthenticated(data) {
+      localStorage.setItem("customer_token", data.token);
+      localStorage.setItem("customer_name", data.full_name);
+      localStorage.setItem("customer_email", data.email);
+      this.currentUser = { full_name: data.full_name, email: data.email };
+      this.showAuthModal = false;
+    },
+
+    signOut() {
+      localStorage.removeItem("customer_token");
+      localStorage.removeItem("customer_name");
+      localStorage.removeItem("customer_email");
+      this.currentUser = null;
+    },
   },
 };
 </script>
 
 <style scoped>
 .header {
-  border-bottom: 2px solid var(--color-primary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 1rem 2rem;
+  border-bottom: 2px solid var(--color-primary);
 }
 
 .header h1 {
@@ -382,10 +457,42 @@ export default {
   font-size: 1.5rem;
 }
 
+.header-auth {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .content {
   max-width: 1100px;
   margin: 0 auto;
   padding: 2rem;
+}
+
+.btn-signin {
+  padding: 0.5rem 1rem;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.btn-signout {
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #aaa;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.btn-signout:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .section {
@@ -677,5 +784,40 @@ export default {
   font-size: 0.75rem;
   font-weight: bold;
   white-space: nowrap;
+}
+
+.welcome {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.booking-user-info {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.user-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0;
+}
+
+.user-info-row + .user-info-row {
+  border-top: 1px solid #222;
+}
+
+.user-info-label {
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.user-info-value {
+  font-size: 0.9rem;
+  color: #fff;
+  font-weight: bold;
 }
 </style>

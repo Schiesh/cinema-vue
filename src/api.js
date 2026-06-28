@@ -244,3 +244,34 @@ export async function deactivateUser(id) {
   });
   if (!res.ok) throw new Error("Failed to deactivate user");
 }
+
+export async function registerCustomer(data) {
+  const res = await fetch(`${API}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user: data }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(Object.values(err).flat().join(", "));
+  }
+  return res.json();
+}
+
+export async function loginCustomer(email, password) {
+  const res = await fetch(`${API}/auth/customer_login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  if (!res.ok) throw new Error("Invalid email or password");
+  return res.json();
+}
+
+export async function fetchCurrentCustomer() {
+  const res = await fetch(`${API}/auth/me`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
